@@ -1,13 +1,12 @@
-[package]
-name = "crm"
-version = "0.1.0"
-authors = ["kailan yue <yuekailan@gmail.com>"]
-edition = "2021"
-description = ""
-documentation = ""
-keywords = ["", ""]
-license = "MIT OR Apache-2.0"
-repository = "https://github.com/kailanyue/06-crm"
+[workspace]
+members = ["crm"]
+resolver = "2"
 
-
-[dependencies]
+[workspace.dependencies]
+anyhow = "1.0.86"
+prost = "0.12.6"
+prost-build = "0.12.6"
+prost-types = "0.12.6"
+tokio = { version = "1.38.0", features = ["rt", "rt-multi-thread", "macros"] }
+tonic = { version = "0.11.0", features = ["zstd", "tls"] }
+tonic-build = "0.11.0"
