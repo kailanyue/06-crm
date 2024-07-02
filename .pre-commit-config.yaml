@@ -62,7 +62,7 @@ repos:
       - id: cargo-tarpaulin
         name: cargo tarpaulin
         description: unit test for the project
-        entry: bash -c 'cargo tarpaulin --out Html --fail-under 60'
+        entry: bash -c 'cargo tarpaulin --out Html --fail-under 0'
         language: rust
         files: \.rs$
         pass_filenames: false

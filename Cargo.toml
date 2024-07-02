@@ -1,12 +1,22 @@
 [workspace]
-members = ["crm"]
+members = ["crm", "user-sate"]
 resolver = "2"
 
 [workspace.dependencies]
 anyhow = "1.0.86"
+chrono = { version = "0.4.38", features = ["serde"] }
 prost = "0.12.6"
 prost-build = "0.12.6"
 prost-types = "0.12.6"
+serde = { version = "1.0.203", features = ["derive"] }
+serde_yaml = "0.9.34"
+sqlx = { version = "0.7.4", features = [
+    "chrono",
+    "postgres",
+    "runtime-tokio",
+    "tls-rustls",
+] }
 tokio = { version = "1.38.0", features = ["rt", "rt-multi-thread", "macros"] }
 tonic = { version = "0.11.0", features = ["zstd", "tls"] }
 tonic-build = "0.11.0"
+# sqlx migrate add
