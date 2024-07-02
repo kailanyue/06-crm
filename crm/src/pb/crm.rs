@@ -28,8 +28,8 @@ pub struct CreateUserRequest {
 /// Generated client implementations.
 pub mod user_service_client {
     #![allow(unused_variables, dead_code, missing_docs, clippy::let_unit_value)]
-    use tonic::codegen::*;
     use tonic::codegen::http::Uri;
+    use tonic::codegen::*;
     #[derive(Debug, Clone)]
     pub struct UserServiceClient<T> {
         inner: tonic::client::Grpc<T>,
@@ -73,9 +73,8 @@ pub mod user_service_client {
                     <T as tonic::client::GrpcService<tonic::body::BoxBody>>::ResponseBody,
                 >,
             >,
-            <T as tonic::codegen::Service<
-                http::Request<tonic::body::BoxBody>,
-            >>::Error: Into<StdError> + Send + Sync,
+            <T as tonic::codegen::Service<http::Request<tonic::body::BoxBody>>>::Error:
+                Into<StdError> + Send + Sync,
         {
             UserServiceClient::new(InterceptedService::new(inner, interceptor))
         }
@@ -114,38 +113,31 @@ pub mod user_service_client {
             &mut self,
             request: impl tonic::IntoRequest<super::GetUserRequest>,
         ) -> std::result::Result<tonic::Response<super::User>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
             let path = http::uri::PathAndQuery::from_static("/crm.UserService/GetUser");
             let mut req = request.into_request();
-            req.extensions_mut().insert(GrpcMethod::new("crm.UserService", "GetUser"));
+            req.extensions_mut()
+                .insert(GrpcMethod::new("crm.UserService", "GetUser"));
             self.inner.unary(req, path, codec).await
         }
         pub async fn create_user(
             &mut self,
             request: impl tonic::IntoRequest<super::CreateUserRequest>,
         ) -> std::result::Result<tonic::Response<super::User>, tonic::Status> {
-            self.inner
-                .ready()
-                .await
-                .map_err(|e| {
-                    tonic::Status::new(
-                        tonic::Code::Unknown,
-                        format!("Service was not ready: {}", e.into()),
-                    )
-                })?;
+            self.inner.ready().await.map_err(|e| {
+                tonic::Status::new(
+                    tonic::Code::Unknown,
+                    format!("Service was not ready: {}", e.into()),
+                )
+            })?;
             let codec = tonic::codec::ProstCodec::default();
-            let path = http::uri::PathAndQuery::from_static(
-                "/crm.UserService/CreateUser",
-            );
+            let path = http::uri::PathAndQuery::from_static("/crm.UserService/CreateUser");
             let mut req = request.into_request();
             req.extensions_mut()
                 .insert(GrpcMethod::new("crm.UserService", "CreateUser"));
@@ -192,10 +184,7 @@ pub mod user_service_server {
                 max_encoding_message_size: None,
             }
         }
-        pub fn with_interceptor<F>(
-            inner: T,
-            interceptor: F,
-        ) -> InterceptedService<Self, F>
+        pub fn with_interceptor<F>(inner: T, interceptor: F) -> InterceptedService<Self, F>
         where
             F: tonic::service::Interceptor,
         {
@@ -251,23 +240,16 @@ pub mod user_service_server {
                 "/crm.UserService/GetUser" => {
                     #[allow(non_camel_case_types)]
                     struct GetUserSvc<T: UserService>(pub Arc<T>);
-                    impl<
-                        T: UserService,
-                    > tonic::server::UnaryService<super::GetUserRequest>
-                    for GetUserSvc<T> {
+                    impl<T: UserService> tonic::server::UnaryService<super::GetUserRequest> for GetUserSvc<T> {
                         type Response = super::User;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::GetUserRequest>,
                         ) -> Self::Future {
                             let inner = Arc::clone(&self.0);
-                            let fut = async move {
-                                <T as UserService>::get_user(&inner, request).await
-                            };
+                            let fut =
+                                async move { <T as UserService>::get_user(&inner, request).await };
                             Box::pin(fut)
                         }
                     }
@@ -297,15 +279,9 @@ pub mod user_service_server {
                 "/crm.UserService/CreateUser" => {
                     #[allow(non_camel_case_types)]
                     struct CreateUserSvc<T: UserService>(pub Arc<T>);
-                    impl<
-                        T: UserService,
-                    > tonic::server::UnaryService<super::CreateUserRequest>
-                    for CreateUserSvc<T> {
+                    impl<T: UserService> tonic::server::UnaryService<super::CreateUserRequest> for CreateUserSvc<T> {
                         type Response = super::User;
-                        type Future = BoxFuture<
-                            tonic::Response<Self::Response>,
-                            tonic::Status,
-                        >;
+                        type Future = BoxFuture<tonic::Response<Self::Response>, tonic::Status>;
                         fn call(
                             &mut self,
                             request: tonic::Request<super::CreateUserRequest>,
@@ -340,18 +316,14 @@ pub mod user_service_server {
                     };
                     Box::pin(fut)
                 }
-                _ => {
-                    Box::pin(async move {
-                        Ok(
-                            http::Response::builder()
-                                .status(200)
-                                .header("grpc-status", "12")
-                                .header("content-type", "application/grpc")
-                                .body(empty_body())
-                                .unwrap(),
-                        )
-                    })
-                }
+                _ => Box::pin(async move {
+                    Ok(http::Response::builder()
+                        .status(200)
+                        .header("grpc-status", "12")
+                        .header("content-type", "application/grpc")
+                        .body(empty_body())
+                        .unwrap())
+                }),
             }
         }
     }

@@ -9,6 +9,15 @@ keywords = ["", ""]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/kailanyue/06-crm"
 
+
+[[bin]]
+name = "server"
+path = "src/server.rs"
+
+[[bin]]
+name = "client"
+path = "src/client.rs"
+
 [dependencies]
 anyhow = { workspace = true }
 prost = { workspace = true }
