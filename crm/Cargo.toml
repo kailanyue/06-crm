@@ -25,7 +25,6 @@ prost-types = { workspace = true }
 tokio = { workspace = true }
 tonic = { workspace = true }
 
-
 [build-dependencies]
 anyhow = { workspace = true }
 prost-build = { workspace = true }

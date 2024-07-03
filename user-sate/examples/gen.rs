@@ -1,5 +1,6 @@
 use core::fmt;
 use std::fmt::Write;
+use std::time::Duration;
 use std::{
     collections::HashSet,
     hash::{Hash, Hasher},
@@ -15,7 +16,7 @@ use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
 use sqlx::{Executor, PgPool};
 use tokio::task;
-use tokio::time::Instant;
+use tokio::time::{sleep, Instant};
 use user_sate::ServerConfig;
 
 // generate 10000 users and run them in a tx, repeat 500 times
@@ -80,12 +81,16 @@ impl Hash for UserStat {
 async fn main() -> Result<()> {
     let config = ServerConfig::load()?;
     let pool = PgPool::connect(&config.db_url).await?;
-    for i in 1..=50 {
-        let users: HashSet<_> = (0..10000).map(|_| Faker.fake::<UserStat>()).collect();
+    for i in 1..=3165 {
+        let users: HashSet<_> = (0..1000).map(|_| Faker.fake::<UserStat>()).collect();
 
         let start = Instant::now();
         raw_insert(users, &pool).await?;
         println!("Batch {} inserted in {:?}", i, start.elapsed());
+        if i % 10 == 0 {
+            println!("Batch {} sleeping", i);
+            sleep(Duration::from_secs(5)).await;
+        }
     }
     Ok(())
 }
@@ -94,7 +99,8 @@ fn list_to_string(list: Vec<i32>) -> String {
     format!("ARRAY{:?}", list)
 }
 
-async fn raw_insert(users: HashSet<UserStat>, pool: &PgPool) -> Result<(), sqlx::Error> {
+#[allow(dead_code)]
+async fn raw_insert1(users: HashSet<UserStat>, pool: &PgPool) -> Result<(), sqlx::Error> {
     let batch_size = 1000; // 每次批量插入的大小
     let users: Vec<UserStat> = users.into_iter().collect();
     let total_batches = (users.len() + batch_size - 1) / batch_size; // 计算总批次数
@@ -149,8 +155,7 @@ async fn raw_insert(users: HashSet<UserStat>, pool: &PgPool) -> Result<(), sqlx:
     Ok(())
 }
 
-#[allow(dead_code)]
-async fn raw_insert1(users: HashSet<UserStat>, pool: &PgPool) -> Result<(), sqlx::Error> {
+async fn raw_insert(users: HashSet<UserStat>, pool: &PgPool) -> Result<(), sqlx::Error> {
     let mut sql = String::with_capacity(10 * 1000 * 1000);
     sql.push_str("
     INSERT INTO user_stats(email, name, gender, created_at, last_visited_at, last_watched_at, recent_watched, viewed_but_not_started, started_but_not_finished, finished, last_email_notification, last_in_app_notification, last_sms_notification)

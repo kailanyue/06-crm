@@ -13,7 +13,7 @@ serde = { workspace = true }
 serde_yaml = { workspace = true }
 sqlx = { workspace = true }
 tokio = { workspace = true }
-tokio-postgres = "0.7.10"
+# tokio-postgres = "0.7.10"
 tonic = { workspace = true }
 
 
