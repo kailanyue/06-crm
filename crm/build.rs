@@ -8,7 +8,7 @@ fn main() -> Result<()> {
 
     tonic_build::configure()
         .out_dir(path)
-        .compile(&["../protos/crm.proto"], &["../protos"])?;
+        .compile(&["../protos/crm/crm.proto"], &["../protos"])?;
 
     Ok(())
 }

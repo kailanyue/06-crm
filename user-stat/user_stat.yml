@@ -1,0 +1,8 @@
+server:
+  port: 50001
+  db_url: postgres://postgres:postgres@192.168.1.9:5432/stats
+auth:
+  pk: |
+    -----BEGIN PUBLIC KEY-----
+    MCowBQYDK2VwAyEASkkSFqLLAimLTBBhj768MoKBtZFOqK0PwqRdiCkWs/Y=
+    -----END PUBLIC KEY-----

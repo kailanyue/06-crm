@@ -1,2 +1,0 @@
-port: 6688
-db_url: postgres://postgres:postgres@192.168.56.101:5432/stats

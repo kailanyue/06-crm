@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Executor, PgPool};
 use tokio::task;
 use tokio::time::{sleep, Instant};
-use user_sate::ServerConfig;
+use user_stat::AppConfig;
 
 // generate 10000 users and run them in a tx, repeat 500 times
 #[derive(Debug, Clone, Dummy, Serialize, Deserialize, PartialEq, Eq)]
@@ -79,10 +79,10 @@ impl Hash for UserStat {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let config = ServerConfig::load()?;
-    let pool = PgPool::connect(&config.db_url).await?;
-    for i in 1..=3165 {
-        let users: HashSet<_> = (0..1000).map(|_| Faker.fake::<UserStat>()).collect();
+    let config = AppConfig::load()?;
+    let pool = PgPool::connect(&config.server.db_url).await?;
+    for i in 1..=500 {
+        let users: HashSet<_> = (0..10000).map(|_| Faker.fake::<UserStat>()).collect();
 
         let start = Instant::now();
         raw_insert(users, &pool).await?;
