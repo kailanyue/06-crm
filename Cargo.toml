@@ -5,11 +5,13 @@ resolver = "2"
 [workspace.dependencies]
 anyhow = "1.0.86"
 chrono = { version = "0.4.38", features = ["serde"] }
+derive_builder = "0.20.0"
 futures = "0.3.30"
 itertools = "0.13.0"
 prost = "0.12.6"
 prost-build = "0.12.6"
 prost-types = "0.12.6"
+proto-builder-trait = "0.6.1"
 rand = "0.8.5"
 serde = { version = "1.0.203", features = ["derive"] }
 serde_yaml = "0.9.34"
@@ -20,6 +22,7 @@ sqlx = { version = "0.7.4", features = [
     "tls-rustls",
 ] }
 tokio = { version = "1.38.0", features = ["rt", "rt-multi-thread", "macros"] }
+tokio-stream = "0.1.15"
 tonic = { version = "0.11.0", features = ["zstd", "tls"] }
 tonic-build = "0.11.0"
 tracing = "0.1.40"

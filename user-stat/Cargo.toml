@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 anyhow = { workspace = true }
 chrono = { workspace = true }
-derive_builder = "0.20.0"
+derive_builder = { workspace = true }
 futures = { workspace = true }
 itertools = { workspace = true }
 prost = { workspace = true }
@@ -22,7 +22,7 @@ tracing-subscriber = { workspace = true }
 
 [build-dependencies]
 anyhow = { workspace = true }
-proto-builder-trait = "0.6.1"
+proto-builder-trait = { workspace = true }
 tonic-build = { workspace = true }
 
 

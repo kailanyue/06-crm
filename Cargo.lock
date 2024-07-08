@@ -343,6 +343,28 @@ dependencies = [
 [[package]]
 name = "crm-send"
 version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "derive_builder",
+ "fake",
+ "futures",
+ "itertools 0.13.0",
+ "prost",
+ "prost-types",
+ "proto-builder-trait",
+ "rand",
+ "serde",
+ "serde_yaml",
+ "sqlx",
+ "tokio",
+ "tokio-stream",
+ "tonic",
+ "tonic-build",
+ "tracing",
+ "tracing-subscriber",
+ "uuid",
+]
 
 [[package]]
 name = "crossbeam-queue"
@@ -2417,6 +2439,15 @@ dependencies = [
  "tonic-build",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "uuid"
+version = "1.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5de17fd2f7da591098415cff336e12965a28061ddace43b59cb3c430179c9439"
+dependencies = [
+ "getrandom",
 ]
 
 [[package]]

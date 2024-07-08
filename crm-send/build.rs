@@ -10,8 +10,8 @@ fn main() -> Result<()> {
         .out_dir(path)
         .compile(
             &[
-                "../protos/metadata/messages.proto",
-                "../protos/metadata/rpc.proto",
+                "../protos/notification/messages.proto",
+                "../protos/notification/rpc.proto",
             ],
             &["../protos"],
         )
