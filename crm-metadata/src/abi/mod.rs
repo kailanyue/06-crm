@@ -37,6 +37,9 @@ impl MetadataService {
 impl Content {
     pub fn materialize(id: u32) -> Self {
         let mut rng = rand::thread_rng();
+        let views = rng.gen_range(1..10000000);
+        let likes = (views as f64 * rng.gen_range(0.0..0.5)).floor() as u64;
+        let dislikes = (views as f64 * rng.gen_range(0.0..0.5)).floor() as u64;
         Content {
             id,
             name: Name().fake(),
@@ -48,9 +51,9 @@ impl Content {
             image: "https://placehold.co/1600x900".to_string(),
             r#type: Faker.fake(),
             created_at: created_at(),
-            views: rng.gen_range(123432..10000000),
-            likes: rng.gen_range(1234..100000),
-            dislikes: rng.gen_range(123..10000),
+            views,
+            likes,
+            dislikes,
         }
     }
 }
