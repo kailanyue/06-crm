@@ -3,7 +3,7 @@ use std::fs;
 use anyhow::Result;
 
 fn main() -> Result<()> {
-    let path = "src/pd";
+    let path = "src/pb";
     fs::create_dir_all(path)?;
 
     tonic_build::configure()
