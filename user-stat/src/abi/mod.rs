@@ -97,8 +97,8 @@ fn ids_query(name: &str, ids: &Vec<u32>) -> String {
 #[cfg(test)]
 mod tests {
     use crate::{
-        pb::{IdQuery, QueryRequestBuilder, TimeQuery},
-        AppConfig,
+        pb::QueryRequestBuilder,
+        test_utils::{id, tq},
     };
     use anyhow::Result;
     use futures::StreamExt;
@@ -107,9 +107,7 @@ mod tests {
 
     #[tokio::test]
     async fn raw_query_should_work() -> Result<()> {
-        let config = AppConfig::load().expect("Failed to load config");
-
-        let service = UserStatsService::new(config).await;
+        let (_tbd, service) = UserStatsService::new_for_test().await?;
 
         let mut stream = service
             .raw_query(RawQueryRequest {
@@ -127,8 +125,7 @@ mod tests {
 
     #[tokio::test]
     async fn query_should_work() -> Result<()> {
-        let config = AppConfig::load().expect("Failed to load config");
-        let service = UserStatsService::new(config).await;
+        let (_tbd, service) = UserStatsService::new_for_test().await?;
 
         let query = QueryRequestBuilder::default()
             .timestamp(("created_at".to_string(), tq(Some(120), None)))
@@ -144,26 +141,5 @@ mod tests {
         }
 
         Ok(())
-    }
-
-    fn id(id: &[u32]) -> IdQuery {
-        IdQuery { ids: id.to_vec() }
-    }
-
-    fn tq(lower: Option<i64>, upper: Option<i64>) -> TimeQuery {
-        TimeQuery {
-            lower: lower.map(days_to_ts),
-            upper: upper.map(days_to_ts),
-        }
-    }
-
-    fn days_to_ts(days: i64) -> Timestamp {
-        let dt = Utc::now()
-            .checked_sub_signed(chrono::Duration::days(days))
-            .unwrap();
-        Timestamp {
-            seconds: dt.timestamp(),
-            nanos: dt.timestamp_subsec_nanos() as i32,
-        }
     }
 }
