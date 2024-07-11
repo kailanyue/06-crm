@@ -1,3 +1,5 @@
+use std::fmt;
+
 use chrono::{DateTime, TimeZone, Utc};
 use itertools::Itertools;
 use prost_types::Timestamp;
@@ -5,7 +7,7 @@ use tonic::{Response, Status};
 use tracing::info;
 
 use crate::{
-    pb::{QueryRequest, RawQueryRequest, User},
+    pb::{QueryRequest, QueryRequestBuilder, RawQueryRequest, TimeQuery, User},
     ResponseStream, ServiceResult, UserStatsService,
 };
 
@@ -41,10 +43,10 @@ fn generate_sql(time_conditions: &str, id_conditions: &str) -> String {
 
     if !time_conditions.is_empty() {
         sql.push_str(time_conditions);
-        sql.push_str(" AND ");
     }
 
     if !id_conditions.is_empty() {
+        sql.push_str(" AND ");
         sql.push_str(id_conditions);
     }
 
@@ -82,6 +84,28 @@ fn timestamp_query(name: &str, lower: &Option<Timestamp>, upper: &Option<Timesta
     }
 }
 
+impl QueryRequest {
+    pub fn new_with_dt(name: &str, lower: DateTime<Utc>, upper: DateTime<Utc>) -> Self {
+        let ts = Timestamp {
+            seconds: lower.timestamp(),
+            nanos: 0,
+        };
+        let ts1 = Timestamp {
+            seconds: upper.timestamp(),
+            nanos: 0,
+        };
+        let tq = TimeQuery {
+            lower: Some(ts),
+            upper: Some(ts1),
+        };
+
+        QueryRequestBuilder::default()
+            .timestamp((name.to_string(), tq))
+            .build()
+            .expect("Failed to build query request")
+    }
+}
+
 fn ts_to_utc(ts: &Timestamp) -> DateTime<Utc> {
     Utc.timestamp_opt(ts.seconds, ts.nanos as _).unwrap()
 }
@@ -94,6 +118,18 @@ fn ids_query(name: &str, ids: &Vec<u32>) -> String {
     format!("array{:?} <@ {}", ids, name)
 }
 
+impl fmt::Display for QueryRequest {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let time_conditions = generate_time_conditions(self);
+        let id_conditions = generate_id_conditions(self);
+        let sql = generate_sql(&time_conditions, &id_conditions);
+
+        info!("Generated SQL: {}", sql);
+
+        write!(f, "{}", sql)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::{
@@ -104,6 +140,18 @@ mod tests {
     use futures::StreamExt;
 
     use super::*;
+
+    // #[test]
+    // fn query_request_to_string_should_work() {
+    //     let d1 = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
+    //     let d2 = Utc.with_ymd_and_hms(2024, 1, 2, 0, 0, 0).unwrap();
+    //     let query = QueryRequest::new_with_dt("created_at", d1, d2);
+    //     let sql = query.to_string();
+    //     assert_eq!(
+    //         sql,
+    //         "SELECT email, name FROM user_stats WHERE created_at BETWEEN '2024-01-01T00:00:00+00:00' AND '2024-01-02T00:00:00+00:00'"
+    //     );
+    // }
 
     #[tokio::test]
     async fn raw_query_should_work() -> Result<()> {

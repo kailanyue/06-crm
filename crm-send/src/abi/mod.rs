@@ -5,16 +5,21 @@ mod sms;
 use std::{ops::Deref, sync::Arc, time::Duration};
 
 use chrono::Utc;
+use crm_metadata::{pb::Content, Tpl};
 use futures::{Stream, StreamExt};
 use prost_types::Timestamp;
 use tokio::{sync::mpsc, time::sleep};
 use tokio_stream::wrappers::ReceiverStream;
 use tonic::{Response, Status};
 use tracing::{info, warn};
+use uuid::Uuid;
 
 use crate::{
     config::AppConfig,
-    pb::{notification_server::NotificationServer, send_request::Msg, SendRequest, SendResponse},
+    pb::{
+        notification_server::NotificationServer, send_request::Msg, EmailMessage, SendRequest,
+        SendResponse,
+    },
     NotificationService, NotificationServiceInner, ResponseStream, ServiceResult,
 };
 
@@ -69,6 +74,26 @@ impl Deref for NotificationService {
 
     fn deref(&self) -> &Self::Target {
         &self.inner
+    }
+}
+
+impl SendRequest {
+    pub fn new(
+        subject: String,
+        sender: String,
+        recipients: &[String],
+        contents: &[Content],
+    ) -> Self {
+        let tpl = Tpl(contents);
+        let msg = Msg::Email(EmailMessage {
+            message_id: Uuid::new_v4().to_string(),
+            subject,
+            sender,
+            recipients: recipients.to_vec(),
+            body: tpl.to_body(),
+        });
+
+        SendRequest { msg: Some(msg) }
     }
 }
 

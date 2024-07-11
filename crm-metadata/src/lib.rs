@@ -3,6 +3,7 @@ pub mod pb;
 mod abi;
 mod config;
 
+pub use abi::Tpl;
 use futures::Stream;
 use pb::{
     metadata_server::{Metadata, MetadataServer},
