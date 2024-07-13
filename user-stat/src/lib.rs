@@ -75,7 +75,7 @@ pub mod test_utils {
     use std::{env, path::Path, sync::Arc};
 
     use anyhow::Result;
-    use chrono::Utc;
+    use chrono::{TimeZone, Utc};
     use prost_types::Timestamp;
     use sqlx::{Executor, PgPool};
     use sqlx_db_tester::TestPg;
@@ -135,7 +135,9 @@ pub mod test_utils {
     }
 
     pub fn days_to_ts(days: i64) -> Timestamp {
-        let dt = Utc::now()
+        let dt = Utc
+            .with_ymd_and_hms(2024, 5, 7, 0, 0, 0)
+            .unwrap()
             .checked_sub_signed(chrono::Duration::days(days))
             .unwrap();
         Timestamp {
