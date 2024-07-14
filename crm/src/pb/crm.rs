@@ -152,7 +152,7 @@ pub mod crm_client {
                 .insert(GrpcMethod::new("crm.Crm", "Welcome"));
             self.inner.unary(req, path, codec).await
         }
-        /// last watched in X days, given them something to watch
+        /// last visited or watched in X days, given them something to watch
         pub async fn recall(
             &mut self,
             request: impl tonic::IntoRequest<super::RecallRequest>,
@@ -202,7 +202,7 @@ pub mod crm_server {
             &self,
             request: tonic::Request<super::WelcomeRequest>,
         ) -> std::result::Result<tonic::Response<super::WelcomeResponse>, tonic::Status>;
-        /// last watched in X days, given them something to watch
+        /// last visited or watched in X days, given them something to watch
         async fn recall(
             &self,
             request: tonic::Request<super::RecallRequest>,

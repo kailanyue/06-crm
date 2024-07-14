@@ -7,6 +7,8 @@ import "google/protobuf/timestamp.proto";
 message User {
     string email = 1;
     string name = 2;
+    repeated int64 viewed_but_not_started = 3;
+    repeated int64 started_but_not_finished = 4;
 }
 
 message QueryRequest {

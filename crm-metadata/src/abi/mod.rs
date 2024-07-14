@@ -1,7 +1,7 @@
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt};
 
 use crate::{
-    pb::{Content, MaterializeRequest, Publisher},
+    pb::{Content, MaterializeRequest, Publisher, UnfinishedContents},
     MetadataService, ResponseStream, ServiceResult,
 };
 use chrono::{DateTime, Days, Utc};
@@ -86,6 +86,26 @@ impl Publisher {
             name: Name().fake(),
             avatar: "https://placehold.co/400x400".to_string(),
         }
+    }
+}
+
+impl UnfinishedContents {
+    pub fn new(viewed_but_not_started: Vec<i64>, started_but_not_finished: Vec<i64>) -> Self {
+        UnfinishedContents {
+            description: Sentence(3..7).fake(),
+            viewed_but_not_started,
+            started_but_not_finished,
+        }
+    }
+}
+
+impl fmt::Display for UnfinishedContents {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "description: {}, viewed_but_not_started: {:?}, started_but_not_finished: {:?}",
+            self.description, self.viewed_but_not_started, self.started_but_not_finished
+        )
     }
 }
 

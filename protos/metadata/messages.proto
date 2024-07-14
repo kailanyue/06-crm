@@ -35,3 +35,9 @@ message Publisher {
 message MaterializeRequest {
     uint32 id = 1;
 }
+
+message UnfinishedContents{
+    string description = 1;
+    repeated int64 viewed_but_not_started = 2;
+    repeated int64 started_but_not_finished = 3;
+}

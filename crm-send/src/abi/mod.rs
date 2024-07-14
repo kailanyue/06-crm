@@ -5,7 +5,10 @@ mod sms;
 use std::{ops::Deref, sync::Arc, time::Duration};
 
 use chrono::Utc;
-use crm_metadata::{pb::Content, Tpl};
+use crm_metadata::{
+    pb::{Content, UnfinishedContents},
+    Tpl,
+};
 use futures::{Stream, StreamExt};
 use prost_types::Timestamp;
 use tokio::{sync::mpsc, time::sleep};
@@ -93,6 +96,25 @@ impl SendRequest {
             body: tpl.to_body(),
         });
 
+        SendRequest { msg: Some(msg) }
+    }
+
+    pub fn new_remind(
+        subject: String,
+        sender: String,
+        recipients: &[String],
+        viewed_but_not_started: Vec<i64>,
+        started_but_not_finished: Vec<i64>,
+    ) -> Self {
+        let contents = UnfinishedContents::new(viewed_but_not_started, started_but_not_finished);
+
+        let msg = Msg::Email(EmailMessage {
+            message_id: Uuid::new_v4().to_string(),
+            subject,
+            sender,
+            recipients: recipients.to_vec(),
+            body: contents.to_string(),
+        });
         SendRequest { msg: Some(msg) }
     }
 }

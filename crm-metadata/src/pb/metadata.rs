@@ -42,6 +42,16 @@ pub struct MaterializeRequest {
     #[prost(uint32, tag = "1")]
     pub id: u32,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct UnfinishedContents {
+    #[prost(string, tag = "1")]
+    pub description: ::prost::alloc::string::String,
+    #[prost(int64, repeated, tag = "2")]
+    pub viewed_but_not_started: ::prost::alloc::vec::Vec<i64>,
+    #[prost(int64, repeated, tag = "3")]
+    pub started_but_not_finished: ::prost::alloc::vec::Vec<i64>,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum ContentType {

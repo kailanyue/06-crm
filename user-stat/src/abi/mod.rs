@@ -3,6 +3,7 @@ use std::fmt;
 use chrono::{DateTime, TimeZone, Utc};
 use itertools::Itertools;
 use prost_types::Timestamp;
+use sqlx::Row;
 use tonic::{Response, Status};
 use tracing::info;
 
@@ -22,15 +23,48 @@ impl UserStatsService {
     }
 
     pub async fn raw_query(&self, req: RawQueryRequest) -> ServiceResult<ResponseStream> {
-        let Ok(ret) = sqlx::query_as::<_, User>(&req.query)
-            .fetch_all(&self.inner.pool)
-            .await
-        else {
+        let Ok(rows) = sqlx::query(&req.query).fetch_all(&self.inner.pool).await else {
             return Err(Status::internal(format!(
                 "Failed to fetch data with query: {}",
                 req.query
             )));
         };
+
+        let ret: Vec<User> = rows
+            .into_iter()
+            .map(|row| {
+                let email: String = row
+                    .try_get("email")
+                    .map_err(|e| Status::internal(format!("Failed to get email: {}", e)))?;
+
+                let name: String = row
+                    .try_get("name")
+                    .map_err(|e| Status::internal(format!("Failed to get name: {}", e)))?;
+
+                let viewed_but_not_started: Vec<i32> =
+                    row.try_get("viewed_but_not_started").map_err(|e| {
+                        Status::internal(format!("Failed to get viewed_but_not_started: {}", e))
+                    })?;
+
+                let started_but_not_finished: Vec<i32> =
+                    row.try_get("started_but_not_finished").map_err(|e| {
+                        Status::internal(format!("Failed to get started_but_not_finished: {}", e))
+                    })?;
+
+                Ok(User {
+                    email,
+                    name,
+                    viewed_but_not_started: viewed_but_not_started
+                        .into_iter()
+                        .map(|i| i as i64)
+                        .collect(),
+                    started_but_not_finished: started_but_not_finished
+                        .into_iter()
+                        .map(|i| i as i64)
+                        .collect(),
+                })
+            })
+            .collect::<Result<Vec<User>, Status>>()?;
 
         Ok(Response::new(Box::pin(futures::stream::iter(
             ret.into_iter().map(Ok),
@@ -39,7 +73,8 @@ impl UserStatsService {
 }
 
 fn generate_sql(time_conditions: &str, id_conditions: &str) -> String {
-    let mut sql = "SELECT email, name FROM user_stats WHERE ".to_string();
+    let mut sql = r#"SELECT email, name, viewed_but_not_started, started_but_not_finished FROM user_stats WHERE "#
+        .to_string();
 
     if !time_conditions.is_empty() {
         sql.push_str(time_conditions);
@@ -141,17 +176,17 @@ mod tests {
 
     use super::*;
 
-    // #[test]
-    // fn query_request_to_string_should_work() {
-    //     let d1 = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
-    //     let d2 = Utc.with_ymd_and_hms(2024, 1, 2, 0, 0, 0).unwrap();
-    //     let query = QueryRequest::new_with_dt("created_at", d1, d2);
-    //     let sql = query.to_string();
-    //     assert_eq!(
-    //         sql,
-    //         "SELECT email, name FROM user_stats WHERE created_at BETWEEN '2024-01-01T00:00:00+00:00' AND '2024-01-02T00:00:00+00:00'"
-    //     );
-    // }
+    #[test]
+    fn query_request_to_string_should_work() {
+        let d1 = Utc.with_ymd_and_hms(2024, 1, 1, 0, 0, 0).unwrap();
+        let d2 = Utc.with_ymd_and_hms(2024, 1, 2, 0, 0, 0).unwrap();
+        let query = QueryRequest::new_with_dt("created_at", d1, d2);
+        let sql = query.to_string();
+        assert_eq!(
+            sql,
+            "SELECT email, name, viewed_but_not_started, started_but_not_finished FROM user_stats WHERE created_at BETWEEN '2024-01-01T00:00:00+00:00' AND '2024-01-02T00:00:00+00:00'"
+        );
+    }
 
     #[tokio::test]
     async fn raw_query_should_work() -> Result<()> {

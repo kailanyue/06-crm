@@ -28,19 +28,21 @@ impl Crm for CrmService {
     ) -> std::result::Result<Response<WelcomeResponse>, Status> {
         self.welcome(request.into_inner()).await
     }
+
     /// last watched in X days, given them something to watch
     async fn recall(
         &self,
-        _request: tonic::Request<RecallRequest>,
+        request: Request<RecallRequest>,
     ) -> std::result::Result<Response<RecallResponse>, Status> {
-        todo!()
+        self.recall(request.into_inner()).await
     }
+
     /// last watched in X days, and user still have unfinished contents
     async fn remind(
         &self,
-        _request: tonic::Request<RemindRequest>,
+        request: Request<RemindRequest>,
     ) -> std::result::Result<Response<RemindResponse>, Status> {
-        todo!()
+        self.remind(request.into_inner()).await
     }
 }
 
