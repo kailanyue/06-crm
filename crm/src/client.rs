@@ -1,5 +1,7 @@
 use anyhow::Result;
-use crm::pb::{crm_client::CrmClient, RemindRequestBuilder};
+use crm::pb::{
+    crm_client::CrmClient, RecallRequestBuilder, RemindRequestBuilder, WelcomeRequestBuilder,
+};
 use tonic::{
     transport::{Certificate, Channel, ClientTlsConfig},
     Request,
@@ -22,30 +24,30 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut client = CrmClient::new(channel);
 
     // wellcome request
-    // let welcome_request = WelcomeRequestBuilder::default()
-    //     .id(Uuid::new_v4().to_string())
-    //     .interval(110u32)
-    //     .content_ids([1u32, 2, 3])
-    //     .build()?;
+    let welcome_request = WelcomeRequestBuilder::default()
+        .id(Uuid::new_v4().to_string())
+        .interval(20u32)
+        .content_ids([1u32, 2, 3])
+        .build()?;
 
-    // let response_welcome = client
-    //     .welcome(Request::new(welcome_request))
-    //     .await?
-    //     .into_inner();
-    // println!("Wellcome Response: {:?}", response_welcome);
+    let response_welcome = client
+        .welcome(Request::new(welcome_request))
+        .await?
+        .into_inner();
+    println!("Wellcome Response: {:?}", response_welcome);
 
-    // // recall request
-    // let recall_request = RecallRequestBuilder::default()
-    //     .id(Uuid::new_v4().to_string())
-    //     .last_visit_interval(30u32)
-    //     .content_ids([1u32, 2, 3])
-    //     .build()?;
+    // recall request
+    let recall_request = RecallRequestBuilder::default()
+        .id(Uuid::new_v4().to_string())
+        .last_visit_interval(20u32)
+        .content_ids([1u32, 2, 3])
+        .build()?;
 
-    // let response_recall = client
-    //     .recall(Request::new(recall_request))
-    //     .await?
-    //     .into_inner();
-    // println!("Recall Response: {:?}", response_recall);
+    let response_recall = client
+        .recall(Request::new(recall_request))
+        .await?
+        .into_inner();
+    println!("Recall Response: {:?}", response_recall);
 
     // remind request
     let remind_request = RemindRequestBuilder::default()

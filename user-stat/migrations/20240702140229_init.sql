@@ -16,7 +16,7 @@ CREATE TABLE user_stats(
     last_watched_at timestamptz,
     -- 最近观看的视频id，用数组表示
     recent_watched int[],
-    -- 查看但未开始的视频id，用数组表示
+    -- 浏览但未开始的视频id，用数组表示
     viewed_but_not_started int[],
     -- 开始但未完成的视频id，用数组表示
     started_but_not_finished int[],
