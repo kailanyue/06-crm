@@ -1,6 +1,6 @@
 server:
   port: 50001
-  db_url: postgres://postgres:postgres@192.168.1.9:5432/stats
+  db_url: postgres://postgres:postgres@localhost:5432/stats
 auth:
   pk: |
     -----BEGIN PUBLIC KEY-----
