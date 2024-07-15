@@ -1,3 +1,5 @@
+pub(crate) mod auth;
+
 use crate::{
     pb::{
         RecallRequest, RecallResponse, RemindRequest, RemindResponse, WelcomeRequest,
